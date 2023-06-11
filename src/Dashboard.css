@@ -1,0 +1,9 @@
+.height-avatar {
+	height: 35px;
+	border-radius: 100px;
+}
+
+.profile-toggle {
+	width: 150px;
+	/* Ajusta el valor según el ancho deseado */
+}

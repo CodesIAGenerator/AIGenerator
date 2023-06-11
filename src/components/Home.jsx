@@ -1,6 +1,7 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './../Home.css';
+import Background1 from './../img/POWERED BY.png';
 
 function Home() {
   return (
@@ -17,10 +18,10 @@ function Home() {
                 <a className="nav-link" href="#">Pricing</a>
               </li>
               <li className="nav-item">
-                <a className="btn btn-success mx-3" href="#">Login</a>
+                <a className="btn btn-outline-success mx-3" href="#">Login</a>
               </li>
               <li className="nav-item">
-                <a className="btn btn-signup" href="#">Signup</a>
+                <a className="btn btn-outline-primary" href="#">Signup</a>
               </li>
             </ul>
           </div>
@@ -34,7 +35,7 @@ function Home() {
             <button className="btn btn-primary">Comenzar</button>
           </div>
           <div className="col-md-6">
-            <img src="ruta-de-la-imagen" alt="Descripción de la imagen" className="img-fluid" />
+            <img src={Background1} alt="Descripción de la imagen" className="img-fluid" />
           </div>
         </div>
         <div className="row mt-5">
@@ -71,8 +72,10 @@ function Home() {
         <div className="row mt-5">
           <div className="col-md-12">
             <h2>¿Qué hacemos?</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae diam at erat ullamcorper eleifend at et lacus. Sed et mi a elit maximus finibus. Phasellus sodales nibh vel ante sagittis, at pulvinar mi condimentum. Aliquam a pharetra purus.</p>
-            <p>Fusce vel consequat nunc. Vivamus dapibus placerat facilisis. Sed laoreet commodo mi vel volutpat. Pellentesque ac tortor vel metus gravida commodo. In rutrum quam sit amet tortor blandit congue.</p>
+            <p>En Short Video AI Generator, nos dedicamos a brindarte una experiencia revolucionaria en la generación de videos cortos utilizando inteligencia artificial. Nuestro objetivo es proporcionarte herramientas avanzadas y fáciles de usar para crear videos impactantes y cautivadores en cuestión de minutos.</p>
+            <p>Con nuestra plataforma, puedes seleccionar plantillas predefinidas o crear tus propias composiciones visuales. Luego, utilizando la potencia de la inteligencia artificial, generaremos videos personalizados y de alta calidad en base a tus preferencias y requisitos.</p>
+            <p>Ya sea que necesites crear contenido para redes sociales, anuncios publicitarios o presentaciones de productos, nuestro generador de videos AI te permitirá destacar en el mundo digital. Además, ofrecemos opciones de personalización, desde efectos visuales hasta selección de música y narración de voz, para que puedas hacer que cada video sea único y represente tu marca de manera efectiva.</p>
+            <p>En Short Video AI Generator, nos enorgullece ofrecer una solución innovadora que agiliza y simplifica el proceso de creación de videos. ¡Únete a nosotros y descubre cómo puedes potenciar tu presencia en línea con videos cautivadores y profesionales!</p>
           </div>
         </div>
       </div>
