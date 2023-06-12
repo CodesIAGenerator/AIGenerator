@@ -1,9 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './../Home.css';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Background1 from './../img/POWERED BY.png';
+import { getAuth, onAuthStateChanged, signOut,  } from '@firebase/auth';
+import app from './../components/firebaseConfig';
 
 function Home() {
+
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const auth = getAuth(app);
+    onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    })
+  }, []);
+
+  const handleSignOut = async () => {
+    const auth = getAuth(app);
+    try {
+      await signOut(auth);
+      // Sign-out successful.
+      navigate('/'); // or wherever you want to redirect the user after sign out
+    } catch (error) {
+      // An error happened.
+      console.log(error);
+    }
+  };
+  
+
   return (
     <div className="text-light min-vh-100 home-container">
       <nav className="navbar navbar-expand-lg navbar-dark home-container">
@@ -17,12 +44,28 @@ function Home() {
               <li className="nav-item">
                 <a className="nav-link" href="#">Pricing</a>
               </li>
-              <li className="nav-item">
-                <a className="btn btn-outline-success mx-3" href="#">Login</a>
-              </li>
-              <li className="nav-item">
-                <a className="btn btn-outline-primary" href="#">Signup</a>
-              </li>
+
+              {
+                user
+                  ? <>
+                      <li className="nav-item">
+                        <NavLink className="btn btn-outline-success mx-3" to="/dashboard">Dashboard</NavLink>
+                      </li>
+                      <li className="nav-item">
+                        <button className="btn btn-outline-danger" onClick={handleSignOut}>Cerrar sesión</button>
+                      </li>
+                    </>
+                  : <>
+                      <li className="nav-item">
+                        <NavLink className="btn btn-outline-success mx-3" to="/login">Login</NavLink>
+                      </li>
+                      <li className="nav-item">
+                        <NavLink className="btn btn-outline-primary" to="/register">Signup</NavLink>
+                      </li>
+                    </>
+              }
+
+              
             </ul>
           </div>
         </div>
@@ -32,7 +75,7 @@ function Home() {
           <div className="col-md-6">
             <h1 className="display-4">Short Video AI Generator</h1>
             <p className="lead">Bienvenido a nuestro sitio web. Prepárate para generar increíbles videos cortos utilizando IA.</p>
-            <button className="btn btn-primary">Comenzar</button>
+            <NavLink to="/register" className="btn btn-primary">Comenzar</NavLink>
           </div>
           <div className="col-md-6">
             <img src={Background1} alt="Descripción de la imagen" className="img-fluid" />
