@@ -3,6 +3,15 @@
 	border-radius: 100px;
 }
 
+#videoUrl {
+	border: none;
+	width: 50%;
+}
+
+#videoUrl::placeholder {
+	color: white;
+}
+
 .profile-toggle {
 	width: 150px;
 	/* Ajusta el valor según el ancho deseado */

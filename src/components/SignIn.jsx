@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './../Home.css';
 import app from './../components/firebaseConfig';
-import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, PhoneAuthProvider, RecaptchaVerifier, signInWithCredential } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
+
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
