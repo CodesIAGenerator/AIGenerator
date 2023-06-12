@@ -1,0 +1,13 @@
+.card-1 {
+	/* margin-left: 100px !important; */
+}
+
+#promptImage {
+	border: none;
+	outline: none !important;
+	margin-right: 20px;
+}
+
+#promptImage::placeholder {
+	color: white;
+}
