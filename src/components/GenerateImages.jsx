@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { getAuth, signOut, onAuthStateChanged } from '@firebase/auth';
-import { getStorage, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { getStorage, ref, getDownloadURL, uploadBytesResumable, listAll } from "firebase/storage";
 import app from './../components/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import './../GenerateImages.css';
 const { Configuration, OpenAIApi } = require("openai");
 
 const config = new Configuration({
-    apiKey: "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",
+    apiKey: "API KEY OPENAI",
 })
 
 const openai = new OpenAIApi(config);
+
 
 const GenerateImages = () => {
 	const [user, setUser] = useState(null);
@@ -27,8 +28,9 @@ const GenerateImages = () => {
 			}
 			// console.log(user);
 		})
-	}, []);
-
+  }, []);
+  
+  
 	const handleGenerateImage = async () => {
 		const promptImage = document.getElementById("promptImage").value;
 	
@@ -39,14 +41,12 @@ const GenerateImages = () => {
 		});
 
     setImages([...images, ...response.data.data.map(item => item.url)]);
-  }
 
-  const handleSavePhotoFireBase = async () => {
+    // Guardamos las fotos en la base de datos
     const storage = getStorage(app);
     const userId = user.uid;
     const userEmail = user.email;
     const files = await decodeJsonToFile(`${userEmail}`, images);
-    
 
 
     for (let i = 0; i < files.length; i++) {
@@ -70,7 +70,38 @@ const GenerateImages = () => {
         }
       );
     }
+
+    
   }
+  
+  const getUserFiles = async (userId, userEmail) => {
+    const storage = getStorage(app);
+    const storageRef = ref(storage, userId + '/' + userEmail);
+    console.log(storageRef)
+    const res = await listAll(storageRef);
+    console.log(res)
+    const urlPromises = res.items.map((item) => getDownloadURL(item));
+    const urls = await Promise.all(urlPromises);
+    return urls;
+  };
+  
+  useEffect(() => {
+    const loadImages = async () => {
+      if (user) {
+        const userId = user.uid;
+        const userEmail = user.email;
+        const urls = await getUserFiles(userId, userEmail);
+        setImages(urls);
+        console.log(`Estas son las urls: ${urls}`)
+      }
+    };
+
+    // console.log(user.displayName)
+  
+    loadImages();
+  }, [user]); // Agrega 'user' a la lista de dependencias
+  
+  
 
   async function decodeJsonToFile(path, images) {
     let result = [];
@@ -103,7 +134,6 @@ const GenerateImages = () => {
                 <option value="4">4</option>
               </select>
               <button className='btn btn-success' onClick={handleGenerateImage}>Generar</button>
-              <button className='btn btn-info mx-3 w-100' onClick={handleSavePhotoFireBase}>Guardar foto</button>
             </div>
           </div>
         </div>
