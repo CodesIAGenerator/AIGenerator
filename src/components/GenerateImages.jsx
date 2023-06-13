@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { getAuth, signOut, onAuthStateChanged } from '@firebase/auth';
-import { getStorage, ref, uploadString, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import app from './../components/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import './../GenerateImages.css';
 const { Configuration, OpenAIApi } = require("openai");
 
 const config = new Configuration({
-    apiKey: "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",
+    apiKey: "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",
 })
 
 const openai = new OpenAIApi(config);
-
-
 
 const GenerateImages = () => {
 	const [user, setUser] = useState(null);
@@ -27,15 +25,12 @@ const GenerateImages = () => {
 			if (!currentUser) {
 				navigate('/login');
 			}
-
-			console.log(user);
+			// console.log(user);
 		})
 	}, []);
 
 	const handleGenerateImage = async () => {
 		const promptImage = document.getElementById("promptImage").value;
-		const storage = getStorage(app);
-
 	
 		const response = await openai.createImage({
 		  prompt: `${promptImage}`,
@@ -44,28 +39,45 @@ const GenerateImages = () => {
 		});
 
     setImages([...images, ...response.data.data.map(item => item.url)]);
-    
-    // jdfgk
-
-
-
   }
-  
-  const handleSavePhotoFireBase = () => {
-    const url = 'https://oaidalleapiprodscus.blob.core.windows.net/private/org-sqW6BJcQRqn0PfHgl7MYWXZR/user-MV3nZV95gMa5ljl37e5DC7HI/img-FGBccHBJ1gWzhbaVFROmCsbq.png?st=2023-06-13T07%3A56%3A27Z&se=2023-06-13T09%3A56%3A27Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-06-12T20%3A38%3A05Z&ske=2023-06-13T20%3A38%3A05Z&sks=b&skv=2021-08-06&sig=iaHa4o/CBA/jsCoZShF%2BoGGgrVuAYPjwikUS1eyPVvE%3D';
-    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
-  
-    fetch(corsProxy + url)
-      .then(response => response.blob())
-      .then(blob => {
-        // Ahora tienes un blob
-        console.log(blob);
-      })
-      .catch(error => console.error(error));
-  }
-  
 
-	
+  const handleSavePhotoFireBase = async () => {
+    const storage = getStorage(app);
+    const files = await decodeJsonToFile('some/path', images);
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const storageRef = ref(storage, `images/${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on('state_changed', 
+        (snapshot) => {
+          // Handle the upload progress
+        }, 
+        (error) => {
+          // Handle unsuccessful uploads
+          console.log(error);
+        }, 
+        () => {
+          // Handle successful uploads on complete
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            console.log('File available at', downloadURL);
+          });
+        }
+      );
+    }
+  }
+
+  async function decodeJsonToFile(path, images) {
+    let result = [];
+    for (let i = 0; i < images.length; i++) {
+      const response = await fetch(images[i]);
+      const blob = await response.blob();
+      const file = new File([blob], `${path}/image_${i}.png`, {type: 'image/png'});
+      result.push(file);
+    }
+    return result;
+  }
 
 	return (
     <div className='home-container min-vh-100 pt-5'>
