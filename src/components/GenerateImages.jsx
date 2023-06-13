@@ -7,7 +7,7 @@ import './../GenerateImages.css';
 const { Configuration, OpenAIApi } = require("openai");
 
 const config = new Configuration({
-    apiKey: "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",
+    apiKey: "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",
 })
 
 const openai = new OpenAIApi(config);
@@ -43,11 +43,15 @@ const GenerateImages = () => {
 
   const handleSavePhotoFireBase = async () => {
     const storage = getStorage(app);
-    const files = await decodeJsonToFile('some/path', images);
+    const userId = user.uid;
+    const userEmail = user.email;
+    const files = await decodeJsonToFile(`${userEmail}`, images);
+    
+
 
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const storageRef = ref(storage, `images/${file.name}`);
+      const file = files[i];  
+      const storageRef = ref(storage, `${userId}/${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
       uploadTask.on('state_changed', 
