@@ -7,7 +7,7 @@ import './../GenerateImages.css';
 const { Configuration, OpenAIApi } = require("openai");
 
 const config = new Configuration({
-    apiKey: "API KEY OPENAI",
+    apiKey: "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",
 })
 
 const openai = new OpenAIApi(config);
@@ -16,7 +16,8 @@ const openai = new OpenAIApi(config);
 const GenerateImages = () => {
 	const [user, setUser] = useState(null);
 	const [imageCount, setImageCount] = useState("");
-	const [images, setImages] = useState([]);
+  const [images, setImages] = useState([]);
+  const [newImages, setNewImages] = useState([]);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -32,28 +33,30 @@ const GenerateImages = () => {
   
   
 	const handleGenerateImage = async () => {
-		const promptImage = document.getElementById("promptImage").value;
-	
-		const response = await openai.createImage({
-		  prompt: `${promptImage}`,
-		  n: Number(imageCount),
-		  size: "1024x1024",
-		});
+    const promptImage = document.getElementById("promptImage").value;
 
-    setImages([...images, ...response.data.data.map(item => item.url)]);
-
+    
+  
+    const response = await openai.createImage({
+      prompt: `${promptImage}`,
+      n: Number(imageCount),
+      size: "1024x1024",
+    });
+  
+    const newImages = response.data.data.map(item => item.url);
+    setImages([...images, ...newImages]);
+  
     // Guardamos las fotos en la base de datos
     const storage = getStorage(app);
     const userId = user.uid;
     const userEmail = user.email;
-    const files = await decodeJsonToFile(`${userEmail}`, images);
-
-
+    const files = await decodeJsonToFile(`${userEmail}`, newImages);
+  
     for (let i = 0; i < files.length; i++) {
       const file = files[i];  
       const storageRef = ref(storage, `${userId}/${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
-
+  
       uploadTask.on('state_changed', 
         (snapshot) => {
           // Handle the upload progress
@@ -70,16 +73,15 @@ const GenerateImages = () => {
         }
       );
     }
-
-    
   }
+  
+
+  
   
   const getUserFiles = async (userId, userEmail) => {
     const storage = getStorage(app);
     const storageRef = ref(storage, userId + '/' + userEmail);
-    console.log(storageRef)
     const res = await listAll(storageRef);
-    console.log(res)
     const urlPromises = res.items.map((item) => getDownloadURL(item));
     const urls = await Promise.all(urlPromises);
     return urls;
@@ -92,7 +94,6 @@ const GenerateImages = () => {
         const userEmail = user.email;
         const urls = await getUserFiles(userId, userEmail);
         setImages(urls);
-        console.log(`Estas son las urls: ${urls}`)
       }
     };
 
@@ -108,11 +109,13 @@ const GenerateImages = () => {
     for (let i = 0; i < images.length; i++) {
       const response = await fetch(images[i]);
       const blob = await response.blob();
-      const file = new File([blob], `${path}/image_${i}.png`, {type: 'image/png'});
+      const timestamp = Date.now(); // Obtiene el timestamp actual
+      const file = new File([blob], `${path}/image_${i}_${timestamp}.png`, {type: 'image/png'}); // Agrega el timestamp al nombre del archivo
       result.push(file);
     }
     return result;
   }
+  
 
 	return (
     <div className='home-container min-vh-100 pt-5'>
